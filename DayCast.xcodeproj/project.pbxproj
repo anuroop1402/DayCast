@@ -6,8 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		6D4D42063049E5A000FBFBC8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D4D41BE3049E5A000FBFBC8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6D4D41C53049E5A000FBFBC8;
+			remoteInfo = DayCast;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		6D4D41C63049E5A000FBFBC8 /* DayCast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DayCast.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D4D42003049E5A000FBFBC8 /* DayCastTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DayCastTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -16,10 +27,22 @@
 			path = DayCast;
 			sourceTree = "<group>";
 		};
+		6D4D42013049E5A000FBFBC8 /* DayCastTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DayCastTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		6D4D41C33049E5A000FBFBC8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6D4D42043049E5A000FBFBC8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -34,6 +57,7 @@
 			children = (
 				6D4D41C83049E5A000FBFBC8 /* DayCast */,
 				6D4D41C73049E5A000FBFBC8 /* Products */,
+				6D4D41E83049F77600FBFBC8 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -41,8 +65,17 @@
 			isa = PBXGroup;
 			children = (
 				6D4D41C63049E5A000FBFBC8 /* DayCast.app */,
+				6D4D42003049E5A000FBFBC8 /* DayCastTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		6D4D41E83049F77600FBFBC8 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				6D4D42013049E5A000FBFBC8 /* DayCastTests */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -69,6 +102,29 @@
 			productName = DayCast;
 			productReference = 6D4D41C63049E5A000FBFBC8 /* DayCast.app */;
 			productType = "com.apple.product-type.application";
+		};
+		6D4D42023049E5A000FBFBC8 /* DayCastTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6D4D420A3049E5A000FBFBC8 /* Build configuration list for PBXNativeTarget "DayCastTests" */;
+			buildPhases = (
+				6D4D42033049E5A000FBFBC8 /* Sources */,
+				6D4D42043049E5A000FBFBC8 /* Frameworks */,
+				6D4D42053049E5A000FBFBC8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6D4D42073049E5A000FBFBC8 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				6D4D42013049E5A000FBFBC8 /* DayCastTests */,
+			);
+			name = DayCastTests;
+			packageProductDependencies = (
+			);
+			productName = DayCastTests;
+			productReference = 6D4D42003049E5A000FBFBC8 /* DayCastTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -100,12 +156,20 @@
 			projectRoot = "";
 			targets = (
 				6D4D41C53049E5A000FBFBC8 /* DayCast */,
+				6D4D42023049E5A000FBFBC8 /* DayCastTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		6D4D41C43049E5A000FBFBC8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6D4D42053049E5A000FBFBC8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +186,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6D4D42033049E5A000FBFBC8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6D4D42073049E5A000FBFBC8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6D4D41C53049E5A000FBFBC8 /* DayCast */;
+			targetProxy = 6D4D42063049E5A000FBFBC8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		6D4D41CF3049E5A200FBFBC8 /* Debug */ = {
@@ -178,7 +257,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -236,7 +315,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -273,7 +352,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -305,8 +384,48 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		6D4D42083049E5A000FBFBC8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 97B64EW8V8;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.planner.DayCastTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DayCast.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DayCast";
+			};
+			name = Debug;
+		};
+		6D4D42093049E5A000FBFBC8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 97B64EW8V8;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.planner.DayCastTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DayCast.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DayCast";
 			};
 			name = Release;
 		};
@@ -327,6 +446,15 @@
 			buildConfigurations = (
 				6D4D41D23049E5A200FBFBC8 /* Debug */,
 				6D4D41D33049E5A200FBFBC8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6D4D420A3049E5A000FBFBC8 /* Build configuration list for PBXNativeTarget "DayCastTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D4D42083049E5A000FBFBC8 /* Debug */,
+				6D4D42093049E5A000FBFBC8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

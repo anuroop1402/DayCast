@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+
+# Xcode — build products
+build/
+DerivedData/
+*.o
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Xcode — per-user state (never share; causes noisy diffs)
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+
+# Note: DayCast.xcodeproj/xcshareddata/ IS committed on purpose,
+# so reviewers get the shared scheme and can run tests immediately.
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.resolved
+
+# Fastlane / misc
+fastlane/report.xml
+fastlane/screenshots/**/*.png
