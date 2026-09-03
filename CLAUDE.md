@@ -9,6 +9,32 @@ Assessed on engineering judgment, not feature volume. All written reasoning live
 
 ---
 
+## Current state — update this at the end of every phase
+
+**Phase 0 complete** (foundations, test target, planning doc, GitHub setup).
+**Phase 1 is next: Domain layer + suitability scoring engine.**
+
+| Phase | | |
+|---|---|---|
+| 0 | Foundations, test target, `docs/01-Solution-Planning.md` | ✅ |
+| 1 | Domain: entities, `SuitabilityRule` × 4, `AppError`, protocols, architecture test | ⏳ next |
+| 2 | Data: DTOs, `HTTPClient`, 3 repository impls, mappers | — |
+| 3 | Use-case implementations + orchestration (marine degradation) | — |
+| 4 | Presentation: ViewModels + `ViewState`, SwiftUI screens | — |
+| 5 | `docs/02`–`04`, full README, screenshots | — |
+
+**Agreed checkpoint in Phase 1:** stop after the four scoring rules and have the user
+review every threshold *before* anything depends on them. Do not build use cases on top
+of an unreviewed scoring model.
+
+**Open decisions to raise at that checkpoint:**
+- Indoor sightseeing = inverse of outdoor comfort, minus a travel-hostility penalty
+  (a blizzard should score lower than steady drizzle — you still have to get there)
+- Skiing treats rain as a *heavy* penalty, not merely "not snow" — rain destroys an
+  existing snow base, so it is worse than a dry warm day
+
+---
+
 ## Architecture — non-negotiable
 
 **Clean Architecture, applied consistently.**
