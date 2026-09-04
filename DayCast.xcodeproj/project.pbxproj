@@ -56,8 +56,8 @@
 			isa = PBXGroup;
 			children = (
 				6D4D41C83049E5A000FBFBC8 /* DayCast */,
+				6D4D42013049E5A000FBFBC8 /* DayCastTests */,
 				6D4D41C73049E5A000FBFBC8 /* Products */,
-				6D4D41E83049F77600FBFBC8 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -68,14 +68,6 @@
 				6D4D42003049E5A000FBFBC8 /* DayCastTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		6D4D41E83049F77600FBFBC8 /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				6D4D42013049E5A000FBFBC8 /* DayCastTests */,
-			);
-			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
