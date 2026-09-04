@@ -262,7 +262,56 @@ the *decision* belongs, not by what reads most naturally at one call site.
 
 **Phase 2 result:** 82 tests, 13 suites, green, exit code 0.
 
+### 2026-09-04 — Phase 3: the swallowed error I had to argue for
+
+`GetActivityForecast` catches the Marine API's errors and returns an empty dictionary.
+Swallowing an error is the kind of thing a reviewer should stop on, and AI review flagged
+it as one — the suggestion was to surface a `marineUnavailable` flag on `ActivityForecast`
+so the UI could distinguish "inland" from "Marine API is down".
+
+I rejected it. The two cases produce the **same user-visible outcome**: we do not know the
+sea state, so surfing reports `insufficientData` and says so. A flag the UI cannot act on
+differently is a field that exists to be ignored. The distinction is a *logging* concern,
+not a presentation one.
+
+But the challenge did find a real bug next to it. Blanket `catch` also swallows
+**cancellation** — and `.task(id:)` cancels the previous request on every keystroke. Land
+succeeding while marine is cancelled would have rendered a coastal city as "no coastal
+data", from a request nobody was waiting on. `AppError.cancelled` and `CancellationError`
+are now rethrown explicitly, with the reason written where the `catch` is.
+
+The pattern is becoming familiar: the AI's *conclusion* was wrong, the thing it was looking
+at was worth looking at.
+
+### 2026-09-04 — Per-day degradation was free, and I nearly wrote it twice
+
+I had planned a decision for this phase: does a *partial* marine response degrade the whole
+city or only the missing days? I asked for both designs and got a plausible one for
+"whole city" — count the days, compare against the window, degrade everything if short.
+
+It was unnecessary. The merge is `days.map { $0.withMarine(marine[$0.date]) }` — a
+dictionary lookup that already yields `nil` for a missing key. Per-day degradation is what
+the data structure does on its own; the "whole city" version would have been extra code to
+make the answer *worse*. The test `degradationIsPerDay` pins it so a future refactor cannot
+quietly reintroduce the choice.
+
+Worth recording because the mistake was mine, not the model's: I asked for a comparison of
+two designs before checking whether the question had an answer already.
+
+### 2026-09-04 — A passing test that proved nothing
+
+The first version of `shortQueryDoesNotHitTheNetwork` asserted only `cities.isEmpty`. That
+passes whether or not the network is touched — an empty stub returns empty either way. It
+now stubs the repository with `.failure(.offline)`, so the test fails loudly if the request
+is ever made, and asserts `repository.queries.isEmpty`.
+
+Third time this project that a green test has been the problem rather than the evidence
+(Phase 0's false pass, Phase 1's characterisation table, now this). The habit that catches
+it is asking *"what would have to break for this test to fail?"* — if the answer is
+"nothing I changed", the test is decoration.
+
+**Phase 3 result:** 103 tests, 16 suites, green, exit code 0.
+
 ---
 
-*Appended per phase. Next: Phase 3 — use-case implementations and the marine-degradation
-orchestration.*
+*Appended per phase. Next: Phase 4 — ViewModels, `ViewState`, and the SwiftUI screens.*

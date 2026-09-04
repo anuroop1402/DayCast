@@ -11,17 +11,18 @@ Assessed on engineering judgment, not feature volume. All written reasoning live
 
 ## Current state — update this at the end of every phase
 
-**Phase 2 complete** (DTOs, `HTTPClient`, 3 repositories, mappers, captured fixtures,
-82 tests green). **Phase 3 is next: use-case implementations + marine-degradation
-orchestration.**
+**Phase 3 complete** (5 use-case implementations, concurrent two-endpoint merge,
+marine-degradation policy, stub repositories, 103 tests green). **Phase 4 is next:
+ViewModels + `ViewState` + SwiftUI screens.** `App/DependencyContainer.swift` does not
+exist yet — it lands in Phase 4 alongside its first consumer.
 
 | Phase | | |
 |---|---|---|
 | 0 | Foundations, test target, `docs/01-Solution-Planning.md` | ✅ |
 | 1 | Domain: entities, `SuitabilityRule` × 4, `AppError`, protocols, architecture test | ✅ |
 | 2 | Data: DTOs, `HTTPClient`, 3 repository impls, mappers | ✅ |
-| 3 | Use-case implementations + orchestration (marine degradation) | ⏳ next |
-| 4 | Presentation: ViewModels + `ViewState`, SwiftUI screens | — |
+| 3 | Use-case implementations + orchestration (marine degradation) | ✅ |
+| 4 | Presentation: ViewModels + `ViewState`, SwiftUI screens | ⏳ next |
 | 5 | `docs/02`–`04`, full README, screenshots | — |
 
 **Scoring model was reviewed and signed off at the Phase 1 checkpoint.** Three bugs were
@@ -90,7 +91,12 @@ Hand-written JSON agrees with the DTO by construction and tests nothing.
 
 - **Marine data is coastal-only.** A failed or empty Marine API response degrades
   *surfing alone* to "no coastal data". It must **never** fail the whole screen — an
-  inland city still gets valid ski and sightseeing scores.
+  inland city still gets valid ski and sightseeing scores. Degradation is **per-day** —
+  it falls out of the dictionary lookup in the merge, so don't reintroduce a city-wide flag.
+- **Cancellation is the one marine error that is not swallowed.** `GetActivityForecast`
+  rethrows `AppError.cancelled` and `CancellationError`. `.task(id:)` cancels on every
+  keystroke, and swallowing that would render a coastal city as "no coastal data" from a
+  superseded request.
 - **Indoor sightseeing is not "always good."** It scores high when outdoor conditions are
   poor, then drops again when weather is travel-hostile (storm, heavy snow, gale).
 - Ski and surf scores are **weather-only** — they do not know whether a mountain or beach
