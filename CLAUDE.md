@@ -95,6 +95,12 @@ rather than silently adding it.
 and AI usage. Do not scatter rationale across code comments; the README stays short and
 links into `docs/`.
 
+**`docs/04-AI-Usage.md` is a running log — append to it at the end of every phase**, while
+the details are fresh. Record specific moments: where AI output was wrong and how it was
+caught, where the user overruled a recommendation and why. Generic bullets written at the
+end ("used AI for brainstorming and code review") are worthless; dated, checkable
+specifics are the whole point.
+
 ## Verify before calling a phase done
 
 ```bash
