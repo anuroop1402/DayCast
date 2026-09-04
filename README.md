@@ -63,8 +63,8 @@ xcodebuild test -project DayCast.xcodeproj -scheme DayCast \
 | Phase | | |
 |---|---|---|
 | 0 | Foundations, test target, planning docs | ✅ |
-| 1 | Domain: entities + suitability scoring engine | ⏳ |
-| 2 | Data: Open-Meteo client, DTOs, repositories | — |
+| 1 | Domain: entities + suitability scoring engine | ✅ |
+| 2 | Data: Open-Meteo client, DTOs, repositories | ⏳ |
 | 3 | Use cases + orchestration | — |
 | 4 | Presentation: ViewModels + SwiftUI screens | — |
 | 5 | Docs, README, screenshots | — |

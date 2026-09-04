@@ -11,27 +11,26 @@ Assessed on engineering judgment, not feature volume. All written reasoning live
 
 ## Current state — update this at the end of every phase
 
-**Phase 0 complete** (foundations, test target, planning doc, GitHub setup).
-**Phase 1 is next: Domain layer + suitability scoring engine.**
+**Phase 1 complete** (domain entities, scoring engine, 4 rules, protocols, 40 tests green).
+**Phase 2 is next: Data layer — DTOs, HTTPClient, repository implementations.**
 
 | Phase | | |
 |---|---|---|
 | 0 | Foundations, test target, `docs/01-Solution-Planning.md` | ✅ |
-| 1 | Domain: entities, `SuitabilityRule` × 4, `AppError`, protocols, architecture test | ⏳ next |
-| 2 | Data: DTOs, `HTTPClient`, 3 repository impls, mappers | — |
+| 1 | Domain: entities, `SuitabilityRule` × 4, `AppError`, protocols, architecture test | ✅ |
+| 2 | Data: DTOs, `HTTPClient`, 3 repository impls, mappers | ⏳ next |
 | 3 | Use-case implementations + orchestration (marine degradation) | — |
 | 4 | Presentation: ViewModels + `ViewState`, SwiftUI screens | — |
 | 5 | `docs/02`–`04`, full README, screenshots | — |
 
-**Agreed checkpoint in Phase 1:** stop after the four scoring rules and have the user
-review every threshold *before* anything depends on them. Do not build use cases on top
-of an unreviewed scoring model.
+**Scoring model was reviewed and signed off at the Phase 1 checkpoint.** Three bugs were
+found by printing a characterisation table, not by the tests. Do not change thresholds or
+composition without re-running that table — see `docs/04-AI-Usage.md`.
 
-**Open decisions to raise at that checkpoint:**
-- Indoor sightseeing = inverse of outdoor comfort, minus a travel-hostility penalty
-  (a blizzard should score lower than steady drizzle — you still have to get there)
-- Skiing treats rain as a *heavy* penalty, not merely "not snow" — rain destroys an
-  existing snow base, so it is worse than a dry warm day
+**Composition principle, applied consistently:** a prerequisite is a *gate* (multiplies,
+can veto), not a weighted factor. Skiing needs snow and running lifts; surfing needs
+rideable swell and marine data; indoor sightseeing needs to be reachable. Outdoor
+sightseeing is purely additive because it has no hard prerequisite.
 
 ---
 

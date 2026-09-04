@@ -118,6 +118,73 @@ skiing and sightseeing still score. A whole-screen error there would be wrong.
 That policy is exactly the orchestration that justifies the use-case layer, so the
 extension pays for itself architecturally. Recorded in `01-Solution-Planning.md` §5.
 
+### 2026-09-04 — Phase 1: green tests hid a broken model
+
+Wrote the domain and 14 tests for the scoring engine. All 14 passed. Then printed a
+characterisation table of the actual scores across ten scenarios, and two of them were
+obviously wrong:
+
+| | before | after |
+|---|---|---|
+| 24 °C sunny day, skiing | **40** ("fair") | 0 |
+| Blizzard, 90 km/h gusts, skiing | **85** ("excellent") | 0 |
+
+The summer day earned 25% for "not raining" and 15% for "not windy" while having no snow.
+The blizzard had perfect snow, but gusts were only 15% of the score, so the model could not
+express "every lift is shut".
+
+**My tests passed because they asserted the behaviours I thought to check** — drizzle vs.
+blizzard for indoor, rain vs. warmth for skiing. It never occurred to me to ask what a
+summer day scores for skiing, so nothing asked. Green tests prove the assertions you wrote,
+not that the model is right. Printing the actual output found in seconds what the suite was
+structurally incapable of finding.
+
+Both bugs now have regression tests naming the old score in a comment.
+
+### 2026-09-04 — One flaw, three times: recognising the pattern
+
+The fix was not "add a wind rule". Root cause: **additive factors let the absence of
+negatives substitute for the presence of a prerequisite.**
+
+I had already solved this twice without noticing it was the same problem — marine data gates
+surfing, travel feasibility gates indoor sightseeing — and then failed to apply it to snow.
+Once named, a third instance was visible immediately: swell height was a 40%-weighted factor,
+so a clean period and warm air dragged a dangerous 4.2 m day to 53/100 and a flat sea to
+12/100.
+
+Now consistent: **skiing needs snow, surfing needs waves, indoor sightseeing needs to be
+reachable.** Outdoor sightseeing stays purely additive because it has no hard prerequisite —
+just accumulating discomfort. The distinction is documented in `ScoreComposition`.
+
+Worth recording because the AI-suggested fix for the first bug was local ("increase the wind
+weight"). Generalising it into a modelling principle, and then re-auditing the rules I had
+already written, was the part that mattered.
+
+### 2026-09-04 — A score of 0 explained with good news
+
+The blizzard scored 0 for skiing and led with *"[favourable] 28 cm fresh snow"*. Both facts
+were true and the ordering made the output nonsense.
+
+Gate reasons are now sorted so `.limiting` always leads: *"Gusts to 90 km/h — lifts likely
+closed"*, then the snow. A veto has to dominate the explanation as well as the arithmetic —
+otherwise the number and the words disagree.
+
+### 2026-09-04 — The architecture test caught itself first ⚠️
+
+`ArchitectureBoundaryTests` fails the build if anything under `Domain/` imports beyond
+`Foundation` or references `URLSession`/`UserDefaults`.
+
+Its first run failed — on doc comments in `AppError` and `Repositories` that *explain* why
+the domain avoids those types. A naive text search counted the explanation of the rule as a
+violation of it. Fixed by stripping comments before scanning; a guard that fires on its own
+documentation trains you to ignore it.
+
+Then verified it can actually fail: injected `import SwiftUI` into a domain entity,
+confirmed the suite went red with `(module → "SwiftUI") == "Foundation"`, and reverted. A
+guard nobody has seen fail is not evidence of anything.
+
+**Phase 1 result:** 40 tests, 5 suites, green.
+
 ---
 
-*Appended per phase. Next: Phase 1 — domain entities and the suitability scoring engine.*
+*Appended per phase. Next: Phase 2 — Open-Meteo client, DTOs, repository implementations.*
