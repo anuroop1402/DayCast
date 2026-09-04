@@ -185,6 +185,84 @@ guard nobody has seen fail is not evidence of anything.
 
 **Phase 1 result:** 40 tests, 5 suites, green.
 
+### 2026-09-04 — Phase 2: fixtures are captured, never hand-written
+
+Every decoding test loads a response **actually captured from Open-Meteo**, saved under
+`DayCastTests/Fixtures/`. This was a deliberate reaction to the Phase 1 lesson: a
+hand-written fixture encodes what you assumed the API returns, so it agrees with your DTO
+by construction and tests nothing. Two of my assumptions were already wrong in code before
+I checked them against real responses:
+
+| assumption | reality |
+|---|---|
+| An inland city fails the Marine request | Prague returns **`HTTP 200` with every value `null`** |
+| No search matches returns `"results": []` | The `results` key is **omitted entirely** |
+
+Both would have shipped as user-visible bugs of the worst kind — *plausible* ones. Mapping
+Prague's nulls to `0` would have claimed we measured a flat sea and scored surfing as
+genuinely bad rather than unknown; a non-optional `results` array would have thrown
+`keyNotFound` on a perfectly successful request and turned "no cities found" into an error
+banner. Neither is visible from the API docs. Both are obvious the moment you `curl` it.
+
+### 2026-09-04 — `.convertFromSnakeCase` broke the forecast silently ⚠️
+
+The best bug of the phase, and it needed no AI to create — it's the idiomatic Swift choice.
+
+`JSONDecoder.keyDecodingStrategy = .convertFromSnakeCase` capitalises every
+underscore-separated component. `temperature_2m_max` therefore converts to
+**`temperature2MMax`** — capital `M` — and the DTO's obvious `temperature2mMax` never
+matched. Nothing threw. The columns *have* to be optional, because Open-Meteo nulls
+variables it cannot produce for a grid point, so all seven temperature columns simply
+decoded as `nil`, the mapper dropped every day for want of a temperature, and the
+repository reported `AppError.noResults` on a completely valid response.
+
+Every Open-Meteo variable that matters here carries a number — `2m`, `10m`. This was not an
+edge case; it was most of the payload.
+
+Caught by the fixture tests, which is exactly the job they were written for — a hand-written
+fixture would not have caught it either, but only because the whole class of bug is
+invisible without a real response to compare against. Verified the mechanism in a
+standalone script rather than guessing at the conversion, then fixed it by **deleting the
+key strategy entirely** and spelling out `CodingKeys` on both columnar DTOs. Explicit keys
+can be diffed line-by-line against the API's `daily=` parameter list; a key strategy cannot
+be diffed against anything.
+
+The regression test asserts on **values**, not on the day count: a wrong key fails as a
+plausible-looking zero, and the softer columns fall back to `0` by design, so
+`count == 7` alone would not have stayed red.
+
+### 2026-09-04 — Two dates that look identical and aren't
+
+Forecast and Marine are requested with `timezone=auto` and can snap to **different grid
+points**, so the same calendar day can come back with a different `utc_offset_seconds` from
+each endpoint — Biarritz resolved to `Europe/Paris` on the marine side. Parsing those
+`"2026-09-04"` labels in the device's timezone produces two different `Date` values for the
+same day, and the marine merge is a dictionary keyed on exactly that value: it would have
+missed silently and every day would have degraded to "no coastal data".
+
+Anchored every label to **UTC midnight** so the value is a stable key, which also stops the
+displayed day sliding by one for a user in Sydney checking Oslo. The constraint leaks into
+the presentation layer — those dates must be formatted with a UTC calendar — so it is
+recorded on `ForecastDate` where the next person will hit it.
+
+### 2026-09-04 — Overruled: `save(_ city:)` on the repository
+
+The natural signature for the recent-searches repository is `save(_ city: City)`. I changed
+it to `replace(with cities: [City])`.
+
+De-duplication and the ten-item cap are **business rules**. `save(_ city:)` forces storage
+to decide where the city goes in the list and what falls off the end — the repository would
+be implementing policy, and a second implementation would have to reimplement it
+identically. `replace(with:)` keeps storage dumb: `SaveRecentSearchUseCase` reads, applies
+the rules, and writes back. The domain keeps the policy, which is the entire point of
+having the protocol live in `Domain/`.
+
+Same instinct as the Phase 1 gate-vs-factor call: the abstraction should be shaped by where
+the *decision* belongs, not by what reads most naturally at one call site.
+
+**Phase 2 result:** 82 tests, 13 suites, green, exit code 0.
+
 ---
 
-*Appended per phase. Next: Phase 2 — Open-Meteo client, DTOs, repository implementations.*
+*Appended per phase. Next: Phase 3 — use-case implementations and the marine-degradation
+orchestration.*

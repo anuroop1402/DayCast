@@ -11,15 +11,16 @@ Assessed on engineering judgment, not feature volume. All written reasoning live
 
 ## Current state — update this at the end of every phase
 
-**Phase 1 complete** (domain entities, scoring engine, 4 rules, protocols, 40 tests green).
-**Phase 2 is next: Data layer — DTOs, HTTPClient, repository implementations.**
+**Phase 2 complete** (DTOs, `HTTPClient`, 3 repositories, mappers, captured fixtures,
+82 tests green). **Phase 3 is next: use-case implementations + marine-degradation
+orchestration.**
 
 | Phase | | |
 |---|---|---|
 | 0 | Foundations, test target, `docs/01-Solution-Planning.md` | ✅ |
 | 1 | Domain: entities, `SuitabilityRule` × 4, `AppError`, protocols, architecture test | ✅ |
-| 2 | Data: DTOs, `HTTPClient`, 3 repository impls, mappers | ⏳ next |
-| 3 | Use-case implementations + orchestration (marine degradation) | — |
+| 2 | Data: DTOs, `HTTPClient`, 3 repository impls, mappers | ✅ |
+| 3 | Use-case implementations + orchestration (marine degradation) | ⏳ next |
 | 4 | Presentation: ViewModels + `ViewState`, SwiftUI screens | — |
 | 5 | `docs/02`–`04`, full README, screenshots | — |
 
@@ -66,6 +67,24 @@ Presentation  →  Domain  ←  Data
 - Both targets use `PBXFileSystemSynchronizedRootGroup`: files dropped in `DayCast/` or
   `DayCastTests/` join their target automatically. **Do not edit `project.pbxproj` to add
   source files.**
+
+## Data-layer facts, verified against captured responses
+
+Fixtures in `DayCastTests/Fixtures/` are **real Open-Meteo responses**, not hand-written.
+Hand-written JSON agrees with the DTO by construction and tests nothing.
+
+- **No `keyDecodingStrategy`.** `.convertFromSnakeCase` maps `temperature_2m_max` to
+  `temperature2MMax` — capital `M`. Because the columns must be optional, a mismatch decodes
+  as `nil` instead of throwing, and the whole week silently disappears. Every DTO spells its
+  `CodingKeys` out.
+- **Inland marine is `HTTP 200` with all-null values**, not an error. The mapper omits those
+  days; an empty dictionary is a valid answer.
+- **A geocoding search with no matches omits the `results` key entirely** — it is not `[]`.
+- **Day labels parse at UTC midnight.** Forecast and Marine can snap to different grid
+  points and report different `utc_offset_seconds`, so any other anchor breaks the merge's
+  dictionary key. Presentation must format these with a UTC calendar.
+- **`RecentSearchesRepository.replace(with:)`, not `save(_ city:)`.** De-duplication and the
+  ten-item cap are business rules and belong in the use case; storage stays dumb.
 
 ## Domain rules that are easy to get wrong
 
