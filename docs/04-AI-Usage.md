@@ -310,8 +310,102 @@ Third time this project that a green test has been the problem rather than the e
 it is asking *"what would have to break for this test to fail?"* — if the answer is
 "nothing I changed", the test is decoration.
 
-**Phase 3 result:** 103 tests, 16 suites, green, exit code 0.
+**Phase 3 result:** 103 tests passing, exit code 0.
+
+### 2026-09-04 — Phase 4: a test that passed because of where I live ⚠️
+
+`DayLabel.weekday` turns a forecast date into "Today" / "Tomorrow" / "Friday". I wrote it
+reading `Calendar.current` to find the user's day, and wrote a test asserting that 23:00 on
+day 0 still reads as "Today".
+
+It failed — and the failure was the useful part. My machine is on IST (UTC+5:30), so
+23:00 UTC is already 04:30 the *next* day locally, and the function correctly returned
+"Thursday". The implementation was right; **the test was asserting my timezone**. Worse, the
+inverse was also true: the two tests that did pass would have failed in New York. A suite
+that green-lights or red-lights code based on where the developer is sitting is not a suite.
+
+The fix was not to adjust the expected strings. `Calendar.current` is a hidden read of the
+environment — the same defect as the scoring engine reading `Date()` internally, which
+`CLAUDE.md` already forbids, and I did not recognise it as the same thing until the test
+broke. The timezone is now an injected parameter, and the tests run the same assertions
+through UTC, Asia/Kolkata and America/New_York. Asia/Kolkata is deliberate: a half-hour
+offset breaks any accidental assumption that offsets are whole hours.
+
+Fourth time on this project a green test has been the problem rather than the evidence.
+
+### 2026-09-04 — The question the compiler asked that I hadn't
+
+`nonisolated enum ViewState` compiled. `extension ViewState: Equatable where Value: Equatable {}`
+compiled. The *test* did not:
+
+> main actor-isolated conformance of 'ViewState<[Int]>' to 'Equatable' cannot be used in
+> nonisolated context
+
+`nonisolated` on a type does not carry to its extensions. With
+`SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, the unmarked extension picked up main-actor
+isolation and took the `Equatable` conformance with it. The app target never noticed,
+because every consumer was already on the main actor — only a `nonisolated` test found it.
+
+Worth recording because `CLAUDE.md` already said "mark domain types `nonisolated`
+explicitly" and I read that as being about *types*. It is about every declaration.
+
+### 2026-09-04 — Where I stopped short: I could not drive the simulator
+
+The phase's exit criterion is "runs on simulator, all states reachable". I got the app
+built, installed, launched and screenshotted at its idle state — then could not tap the
+search field, because `simctl` has no tap primitive and AppleScript keystrokes go nowhere
+without focus. Two attempts, then I stopped rather than burning the phase on simulator
+automation.
+
+So: **launch and first render are verified; the search → forecast → breakdown flow is not.**
+Recording it here rather than letting "Phase 4 complete" imply more than was checked. The
+screenshots that Phase 5 owes are the natural place to close this properly.
+
+### 2026-09-05 — The bug no test could have found
+
+Running the app against Queenstown produced a card reading **"Best day for Ski:
+Wednesday"** above a red **Unsuitable** badge. Every number behind it was right — I checked
+against the live API: Wednesday genuinely had the week's most snowfall (3.01 cm), and the
+town sits at 322 m while its ski fields are at 1200–1900 m, so a hopeless weather-only ski
+score is the documented limitation working exactly as designed.
+
+The defect was the *card contradicting itself*. Someone skimming the strip reads the day,
+not the badge. `bestDay(for:)` returning the highest-scoring day is correct domain
+behaviour; presenting that day as a recommendation when the answer is "don't" is a
+presentation bug, and no unit test would ever have flagged it because every assertion it
+could make was already passing.
+
+Fixed by moving the rule into `ForecastViewModel` as `BestDaySummary` — in a private view
+struct it would have stayed untestable, and this project deliberately has no snapshot
+tests. `.unsuitable` now names no day; `.poor` still does, because "least bad" is useful
+when a week is merely mediocre and stops being useful when the answer is *don't*.
+
+It also caught a VoiceOver bug on the way: the card was about to read "Skiing, dash,
+Unsuitable", which tells a screen-reader user nothing. It now reads "Skiing: no suitable
+day in the next 7 days".
+
+The lesson is about *my* process, not the model's: I called Phase 4 complete on 133 green
+tests without having looked at the app against real data. The user looked, and found this
+in one screenshot.
+
+### 2026-09-05 — Two wrong answers from taking the first search result
+
+Hunting for a city that would actually score for skiing, I scripted a geocoding sweep with
+`count=1` and reported that La Paz was 26 m and 33.8 °C, and that Leh was at sea level.
+Both were the wrong continent — La Paz, Mexico and a coastal Leh, not Bolivia and Ladakh.
+
+The irony is that this is precisely the failure the app already prevents: search results
+carry `admin1, country` so the user disambiguates, and `SaveRecentSearch` de-duplicates on
+Open-Meteo's numeric `id` rather than on name for exactly this reason. My throwaway script
+skipped the safeguard the real code has.
+
+Confirmed live: searching **Farellones** returns the 173 m one in Aysén *first* and the
+2458 m ski town second. The subtitle is what makes that survivable.
+
+**Phase 4 result:** 136 tests passing, exit code 0. The first run came back exit code 65
+with zero test failures — a simulator preflight flake that never launched the app. Exactly
+the case the exit-code rule exists for, and the second time this session it has fired.
 
 ---
 
-*Appended per phase. Next: Phase 4 — ViewModels, `ViewState`, and the SwiftUI screens.*
+*Appended per phase. Next: Phase 5 — `docs/02`–`03`, README, screenshots.*

@@ -1,17 +1,15 @@
-//
-//  DayCastApp.swift
-//  DayCast
-//
-//  Created by Anuroop-Keus on 03/09/26.
-//
-
 import SwiftUI
 
 @main
 struct DayCastApp: App {
+
+    /// Built once and held for the app's lifetime. Nothing below this line constructs a
+    /// concrete repository or client — see `DependencyContainer`.
+    @State private var container = DependencyContainer()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            CitySearchScreen(container: container)
         }
     }
 }

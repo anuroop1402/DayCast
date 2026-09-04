@@ -11,10 +11,14 @@ Assessed on engineering judgment, not feature volume. All written reasoning live
 
 ## Current state — update this at the end of every phase
 
-**Phase 3 complete** (5 use-case implementations, concurrent two-endpoint merge,
-marine-degradation policy, stub repositories, 103 tests green). **Phase 4 is next:
-ViewModels + `ViewState` + SwiftUI screens.** `App/DependencyContainer.swift` does not
-exist yet — it lands in Phase 4 alongside its first consumer.
+**Phase 4 complete** (`ViewState`, 2 ViewModels, 3 screens, formatting layer,
+`DependencyContainer`, 136 tests green). **Phase 5 is next: `docs/02`–`03`, README,
+screenshots.**
+
+Verified against the live API: search → forecast renders correctly for Queenstown, and the
+inland marine degradation works end to end (surfing "No data", everything else scored).
+That run also found the one bug tests could not — see the `BestDaySummary` entry in
+`docs/04-AI-Usage.md`. **Look at the app against real data before calling a phase done.**
 
 | Phase | | |
 |---|---|---|
@@ -22,8 +26,8 @@ exist yet — it lands in Phase 4 alongside its first consumer.
 | 1 | Domain: entities, `SuitabilityRule` × 4, `AppError`, protocols, architecture test | ✅ |
 | 2 | Data: DTOs, `HTTPClient`, 3 repository impls, mappers | ✅ |
 | 3 | Use-case implementations + orchestration (marine degradation) | ✅ |
-| 4 | Presentation: ViewModels + `ViewState`, SwiftUI screens | ⏳ next |
-| 5 | `docs/02`–`04`, full README, screenshots | — |
+| 4 | Presentation: ViewModels + `ViewState`, SwiftUI screens | ✅ |
+| 5 | `docs/02`–`03`, full README, screenshots | ⏳ next |
 
 **Scoring model was reviewed and signed off at the Phase 1 checkpoint.** Three bugs were
 found by printing a characterisation table, not by the tests. Do not change thresholds or
@@ -57,6 +61,13 @@ Presentation  →  Domain  ←  Data
 
 - **Swift 6** language mode, iOS 18.0+. `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` is on,
   so mark domain types `nonisolated` explicitly rather than inheriting main-actor isolation.
+  **`nonisolated` does not carry to extensions** — an unmarked `extension` is main-actor
+  isolated even on a `nonisolated` type, which silently makes protocol conformances declared
+  there unusable from `nonisolated` code. Mark the extension too.
+- **Never read `Calendar.current` or `Date()` inside a formatter or a rule.** Inject the
+  timezone and the reference date. A hidden environment read makes tests assert the
+  developer's machine — `DayLabel` shipped that bug and its test only failed because the
+  machine was on a +5:30 offset.
 - **Scoring engine**: pure `nonisolated` functions. No I/O, and never read `Date()`
   internally — inject the reference date so tests are deterministic.
 - **State**: `@Observable` + a generic `ViewState<T>` (`idle / loading / loaded / empty /

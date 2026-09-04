@@ -51,6 +51,7 @@ with a score bolted on.
 | Ski score for a city with no mountains? Surf score for Prague? | Score the **weather at the city's coordinates**, not terrain. Surfing degrades explicitly to "no coastal data" when the Marine API returns nothing. | Terrain/resort data is out of scope and not in Open-Meteo. Being honest about *no data* beats inventing a plausible-looking number. |
 | Units — °C/km/h or °F/mph? | Metric, fixed. | Open-Meteo's defaults. A unit toggle is presentation-only and adds no architectural signal. |
 | How precise must scores be? | 0–100, shown as 5 named bands (Excellent → Unsuitable). | False precision ("73.2% suitable") oversells a model built on assumptions. Bands communicate confidence honestly. |
+| Whose "today" is Today — the user's, or the city's? | **The user's own calendar day.** | Open-Meteo returns the *city's* local days, so for a few hours each day the two disagree — a user in Mumbai at 04:30 looking at Oslo is already on the next date. The phone's day wins because it matches the calendar the user is holding; the cost is that in that window the row labelled "Today" is the city's tomorrow. Surfaced in `DayLabel`, where the timezone is an injected parameter rather than a hidden read of `Calendar.current`. |
 
 ## 4. Scope
 
