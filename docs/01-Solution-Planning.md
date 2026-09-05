@@ -13,7 +13,7 @@
 
 Let a user search for a city, then answer one question for the next 7 days:
 
-> *"How good is each of these four days for skiing / surfing / outdoor sightseeing /
+> *"How good is each of these seven days for skiing / surfing / outdoor sightseeing /
 > indoor sightseeing?"*
 
 The brief is explicit that the interesting part is **not** fetching weather. It is:
