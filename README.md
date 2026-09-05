@@ -11,9 +11,14 @@ dependencies**
 
 ## Screenshots
 
-| Search | The week | Why this score |
-|---|---|---|
-| ![Search](docs/screenshots/01-search.png) | ![Forecast](docs/screenshots/02-forecast.png) | ![Breakdown](docs/screenshots/03-breakdown.png) |
+| Search | The week | Why this score | When it fails |
+|---|---|---|---|
+| ![Search](docs/screenshots/01-search.png) | ![Forecast](docs/screenshots/02-forecast.png) | ![Breakdown](docs/screenshots/03-breakdown.png) | ![Offline](docs/screenshots/04-offline.png) |
+
+Note the second screen: surfing reads **No data**, not a bad score. Valle Nevado is in the
+Andes, and the Marine API has nothing for it — so surfing degrades alone while skiing and
+sightseeing still score. The retry button on the fourth appears because `AppError.offline`
+says retrying could work; it would not appear for a decoding failure, where it cannot.
 
 ---
 
@@ -31,7 +36,7 @@ xcodebuild test -project DayCast.xcodeproj -scheme DayCast \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
-**136 tests.** Try **Valle Nevado** for a good ski week, **Biarritz** for real surf, and
+**138 tests.** Try **Valle Nevado** for a good ski week, **Biarritz** for real surf, and
 **Prague** for an inland city where surfing correctly reports *no data* while everything
 else still scores.
 
@@ -88,7 +93,7 @@ followed: [`docs/02-Architecture-Decisions.md`](docs/02-Architecture-Decisions.m
 |---|---|
 | [`01-Solution-Planning.md`](docs/01-Solution-Planning.md) | Problem framing, the questions I'd have asked a PM and what I assumed instead, scope cuts with reasons. Written **before** implementation and deliberately not revised. |
 | [`02-Architecture-Decisions.md`](docs/02-Architecture-Decisions.md) | 15 decisions, each with what was rejected and what it **costs**. |
-| [`03-Assumptions-and-Tradeoffs.md`](docs/03-Assumptions-and-Tradeoffs.md) | What the model assumes, **where the plan turned out to be wrong**, known limitations, what I'd do next. |
+| [`03-Assumptions-and-Tradeoffs.md`](docs/03-Assumptions-and-Tradeoffs.md) | What the model assumes, **where the plan turned out to be wrong**, known limitations, how each definition-of-done criterion was verified, and what I'd do next. |
 | [`04-AI-Usage.md`](docs/04-AI-Usage.md) | A dated log kept as the work happened — where AI output was wrong and how it was caught, where I overruled it and why. |
 | [`CLAUDE.md`](CLAUDE.md) | The rules I held myself to, including what was considered and rejected. |
 

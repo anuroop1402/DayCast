@@ -21,6 +21,10 @@ contradiction, and the Phase 5 snow-reason contradiction. In all three, every in
 number was correct and the combination lied. **Look at the app against real data before
 calling anything done.**
 
+**All six definition-of-done criteria in `docs/01` §10 are verified** — including a fresh
+clone from the remote building and passing, and the offline state recovering on retry. The
+evidence is in `docs/03` §4.
+
 | Phase | | |
 |---|---|---|
 | 0 | Foundations, test target, `docs/01-Solution-Planning.md` | ✅ |

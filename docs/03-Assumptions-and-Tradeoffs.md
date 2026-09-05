@@ -4,8 +4,9 @@
 > deliberately not revised. This document is where the plan and the outcome are compared, so
 > the gap stays visible instead of being edited away.
 >
-> Three parts: what the scoring model assumes, **where the plan turned out to be wrong**, and
-> what I would do next.
+> Five parts: what the scoring model assumes, **where the plan turned out to be wrong**, the
+> known limitations, how each definition-of-done criterion was verified, and what I would do
+> next.
 
 ---
 
@@ -161,7 +162,30 @@ weaknesses is not being read carefully.
 
 ---
 
-## 4. What I would do next
+## 4. Definition of done — verified
+
+[`01-Solution-Planning.md`](01-Solution-Planning.md) §10 committed to six criteria. All six
+were checked against the running app or the real repository rather than assumed.
+
+| Criterion | Verified | How |
+|---|---|---|
+| Fresh clone builds and `xcodebuild test` passes with no manual setup | ✅ | Cloned from the remote into an empty directory and ran the README's exact command: exit code 0, 138 tests. No package resolution, no scheme selection, no keys. |
+| `Domain` has zero imports outside `Foundation` | ✅ | `ArchitectureBoundaryTests` reads the source files on every ⌘U. |
+| Every score in the UI is explainable by tapping into a breakdown | ✅ | Screenshot 3 — conditions the score can be audited against, plus the reason the domain generated. |
+| Inland city degrades surfing only, not the screen | ✅ | Queenstown and Valle Nevado, live. Marine returns `HTTP 200` with all-null values; surfing reads "No data" while skiing and both sightseeing scores stand. |
+| Airplane mode shows a real error state with retry, not a spinner forever | ✅ | Wi-Fi off mid-search → "No connection" with a working **Try again**; Wi-Fi on → retry recovered and returned results. |
+| README: what, how to run, assumptions, screenshots | ✅ | — |
+
+![Offline state](screenshots/04-offline.png)
+
+The offline path is the one worth showing rather than asserting. `ViewState.failed` carries
+the `AppError` rather than a bare flag precisely so the view can ask `isRetryable` — the
+button appears because `.offline` says retrying could work, and it would *not* appear for
+`.decoding`, where retrying the identical request cannot help.
+
+---
+
+## 5. What I would do next
 
 Roughly in order of value per hour, if this continued past the exercise.
 

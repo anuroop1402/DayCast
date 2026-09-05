@@ -469,7 +469,13 @@ shows each day's top activity rather than all four — because a document that r
 the deviations flattering to its author is not a record.
 
 **Phase 5 result:** 138 tests passing, exit code 0. `docs/02`, `docs/03`, a rewritten README,
-and three screenshots captured from the running app.
+and four screenshots captured from the running app.
+
+All six definition-of-done criteria from `01` §10 are now verified rather than assumed,
+including the two that needed something other than a test run: a clone from the remote into
+an empty directory building and passing on the README's exact command, and the offline error
+state recovering when retried with the network restored. Both are recorded with evidence in
+`docs/03` §4.
 
 ---
 

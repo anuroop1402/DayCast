@@ -308,7 +308,7 @@ without touching the network.
 
 ## AD-14 — Swift Testing, and no snapshot tests
 
-**Decision.** `import Testing` throughout, 136 tests. No UI snapshot tests.
+**Decision.** `import Testing` throughout, 138 tests. No UI snapshot tests.
 
 **Why no snapshots.** High maintenance cost, low signal for a three-screen app: they fail on
 every deliberate design change and pass through most real regressions. The effort went into
