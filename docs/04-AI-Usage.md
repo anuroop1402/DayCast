@@ -477,6 +477,28 @@ an empty directory building and passing on the README's exact command, and the o
 state recovering when retried with the network restored. Both are recorded with evidence in
 `docs/03` §4.
 
+### 2026-09-05 — Probing the API instead of writing what sounded right
+
+`docs/03` §5 originally described elevation correction for skiing as essentially passing an
+`elevation` parameter. That sentence was plausible, matched the documentation, and was
+wrong in the part that matters.
+
+Before leaving it in a submission I queried the API at 322 m and 1900 m for the same
+coordinates. Temperature is downscaled properly — a ~0.58 °C/100 m lapse rate. But
+`precipitation_sum`, `rain_sum` and `snowfall_sum` come back **identical** at both
+elevations. So the naive change would report −1.1 °C alongside 3.4 mm of rain, on a day
+where that precipitation is obviously snow: the temperature gate opens while fresh snowfall
+stays at zero and the rain penalty keeps applying. Confidently wrong, where the app is
+currently honestly limited.
+
+The section now carries the measured numbers and the two real problems — precipitation-phase
+reclassification, and the fact that nothing in Open-Meteo says where the mountain is.
+
+The general lesson, and it is the same one as the characterisation table and the two
+screenshot bugs: **a claim that sounds right is not a checked claim.** It cost one API call
+to find out. Being able to say precisely why a change is not a one-liner is stronger
+evidence of judgement than having attempted it.
+
 ---
 
-*Log complete. Five phases, five commits, each on a green build.*
+*Log complete. Five phases, each on a green build.*

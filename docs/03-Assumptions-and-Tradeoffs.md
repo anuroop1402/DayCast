@@ -189,10 +189,46 @@ button appears because `.offline` says retrying could work, and it would *not* a
 
 Roughly in order of value per hour, if this continued past the exercise.
 
-1. **Elevation correction for skiing.** The single largest source of wrong answers. Open-Meteo
-   returns `elevation` per response, and its API accepts an `elevation` parameter — scoring a
-   point 1000 m above the town would make ski scores mean something for the towns people
-   actually search.
+1. **Elevation correction for skiing.** The single largest source of wrong answers, and
+   *not* the one-parameter change it first appears to be. I probed the API rather than
+   assume, and the result is worth writing down.
+
+   Open-Meteo's Forecast API accepts an `elevation` parameter and genuinely downscales
+   temperature — Queenstown at 1900 m instead of its true 322 m:
+
+   | | 09-05 | 09-06 | 09-07 | 09-08 | 09-09 | 09-10 | 09-11 |
+   |---|---|---|---|---|---|---|---|
+   | 322 m (auto) | 9.2 | 9.0 | 9.8 | 13.0 | 10.7 | 4.8 | 7.2 |
+   | 1900 m | −1.1 | −1.3 | −0.5 | 2.7 | 0.4 | −5.5 | −3.1 |
+
+   That is a ~0.58 °C/100 m lapse rate, and it would fix the *base-credit* half of the snow
+   gate on its own.
+
+   **But precipitation is not re-derived.** `precipitation_sum`, `rain_sum` and
+   `snowfall_sum` come back byte-identical at 322 m and 1900 m. So 5 September reports
+   −1.1 °C *and* 3.4 mm of rain — at a temperature where it is plainly falling as snow.
+
+   That combination is worse than the current honest limitation: the temperature gate would
+   open while fresh snowfall stayed near zero, and `rainFactor` would keep applying its 0.35
+   penalty for rain that is not happening on the mountain. **Confidently wrong beats
+   honestly limited only if you do the rest of the work.**
+
+   So the real task is reclassifying precipitation phase in the mapper — take
+   `precipitation_sum` (which is elevation-independent, so safe to reuse), split rain from
+   snow against the downscaled temperature, and convert millimetres of water to centimetres
+   of snow at roughly 10:1. That is a meteorological model with assumptions of its own, and
+   it would need documenting here alongside the existing thresholds.
+
+   A second open question: **where the target elevation comes from.** Open-Meteo will not
+   say that Queenstown has a ski field 1600 m above it. A user-facing control ("score skiing
+   at +1000 m") needs no new data source and makes the guess visible rather than burying it,
+   which is the choice most consistent with the rest of this project. A terrain lookup for
+   the highest point within ~15 km is the correct answer and costs a second provider.
+
+   Architecturally the change is contained: `SkiingRule` needs no edit at all, because it
+   consumes `DailyWeather` and would simply receive corrected values. The cost is that
+   skiing and sightseeing then want *different* elevations, making this a third concurrent
+   request — which `GetActivityForecast` is already shaped for.
 2. **A characterisation-table test.** The manual table found three bugs no unit test could.
    Committing its output as an approved snapshot would make composition changes visible in a
    diff instead of relying on someone remembering to re-run it. This is the highest-value
