@@ -11,14 +11,15 @@ Assessed on engineering judgment, not feature volume. All written reasoning live
 
 ## Current state — update this at the end of every phase
 
-**Phase 4 complete** (`ViewState`, 2 ViewModels, 3 screens, formatting layer,
-`DependencyContainer`, 136 tests green). **Phase 5 is next: `docs/02`–`03`, README,
-screenshots.**
+**Phase 5 complete — all five phases done.** (`docs/02`, `docs/03`, README, 3 screenshots,
+138 tests green.)
 
-Verified against the live API: search → forecast renders correctly for Queenstown, and the
-inland marine degradation works end to end (surfing "No data", everything else scored).
-That run also found the one bug tests could not — see the `BestDaySummary` entry in
-`docs/04-AI-Usage.md`. **Look at the app against real data before calling a phase done.**
+Verified against the live API on the simulator: search → forecast → breakdown, for a coastal
+city, an inland one and a ski resort. Three bugs in this project were found by *looking at
+the app*, never by the suite — the Phase 1 characterisation table, the Phase 4 best-day
+contradiction, and the Phase 5 snow-reason contradiction. In all three, every individual
+number was correct and the combination lied. **Look at the app against real data before
+calling anything done.**
 
 | Phase | | |
 |---|---|---|
@@ -27,7 +28,7 @@ That run also found the one bug tests could not — see the `BestDaySummary` ent
 | 2 | Data: DTOs, `HTTPClient`, 3 repository impls, mappers | ✅ |
 | 3 | Use-case implementations + orchestration (marine degradation) | ✅ |
 | 4 | Presentation: ViewModels + `ViewState`, SwiftUI screens | ✅ |
-| 5 | `docs/02`–`03`, full README, screenshots | ⏳ next |
+| 5 | `docs/02`–`03`, full README, screenshots | ✅ |
 
 **Scoring model was reviewed and signed off at the Phase 1 checkpoint.** Three bugs were
 found by printing a characterisation table, not by the tests. Do not change thresholds or

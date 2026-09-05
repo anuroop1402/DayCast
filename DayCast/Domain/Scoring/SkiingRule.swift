@@ -68,6 +68,9 @@ nonisolated struct SkiingRule: SuitabilityRule {
     // MARK: - Reason triggers
 
     private static let notableSnowfallCm = 5.0
+    /// Below this, "fresh snow" is a rounding artefact rather than something a skier would
+    /// notice underfoot, so the reason says there is none.
+    private static let reportableSnowfallCm = 0.5
     private static let notableRainMillimetres = 2.0
     private static let gateWorthMentioning = 0.75
 
@@ -139,6 +142,15 @@ nonisolated struct SkiingRule: SuitabilityRule {
             )
         }
         if availability < Self.gateWorthMentioning {
+            // There may well *be* fresh snow here — just not enough to lift the gate. Saying
+            // "no fresh snow" beneath a conditions panel reading "Snowfall 4.4 cm" makes the
+            // screen argue with itself, which costs the user more trust than the score gains.
+            if day.snowfallSumCentimetres >= Self.reportableSnowfallCm {
+                return ScoreReason(
+                    factor: .freshSnow, sentiment: .limiting,
+                    detail: "Only \(day.snowfallSumCentimetres.reasonValue) cm fresh snow"
+                )
+            }
             return ScoreReason(
                 factor: .snowBase, sentiment: .limiting,
                 detail: "Thin cover — no fresh snow"

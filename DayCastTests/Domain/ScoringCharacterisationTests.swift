@@ -137,6 +137,35 @@ struct ScoringCharacterisationTests {
         #expect(result.reasons.first?.sentiment == .limiting)
     }
 
+    @Test("A day with some fresh snow is not told there is none")
+    func partialSnowfallIsReportedNotDenied() {
+        // Found by looking at the app, not by a test: Valle Nevado showed "Thin cover — no
+        // fresh snow" directly beneath a conditions row reading "Snowfall 4.4 cm". The score
+        // was right; the sentence was false, and false next to the number disproving it.
+        let day = DailyWeather.fixture(
+            temperatureMax: -2, temperatureMin: -8, apparentTemperatureMax: -5,
+            snowfallSum: 4.4, windGustsMax: 38
+        )
+
+        let result = score(day, .skiing)
+        let snow = result.reasons.first { $0.factor == .freshSnow || $0.factor == .snowBase }
+
+        #expect(snow?.sentiment == .limiting, "not enough snow is still a limiting factor")
+        #expect(snow?.detail.contains("4.4") == true, "got: \(snow?.detail ?? "none")")
+        #expect(snow?.detail.contains("no fresh snow") == false)
+    }
+
+    @Test("A genuinely snowless day still says so plainly")
+    func noSnowfallIsStillReportedAsNone() {
+        // The other side of the fix: a trace too small to notice must not be dressed up as
+        // fresh snow, or the reason becomes noise.
+        let day = DailyWeather.fixture(temperatureMax: 1, snowfallSum: 0.1)
+
+        let detail = score(day, .skiing).reasons.first { $0.factor == .snowBase }?.detail
+
+        #expect(detail?.contains("no fresh snow") == true, "got: \(detail ?? "none")")
+    }
+
     @Test("A blizzard is not an excellent ski day — lifts do not run in 90 km/h gusts")
     func blizzardIsNotExcellentForSkiing() {
         let result = score(.blizzard, .skiing)

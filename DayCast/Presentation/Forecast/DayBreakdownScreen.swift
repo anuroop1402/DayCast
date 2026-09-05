@@ -94,7 +94,9 @@ private extension DailyWeather {
     /// The measurements behind the scores, so a user can check the model's working.
     var summaryItems: [(label: String, value: String)] {
         var items: [(String, String)] = [
-            ("Temperature", "\(temperatureMinCelsius.roundedInt)–\(temperatureMaxCelsius.roundedInt) °C"),
+            // "to" rather than an en dash: at a ski resort both ends are routinely negative,
+            // and "-8–-2 °C" is unreadable. One format for every case beats a conditional one.
+            ("Temperature", "\(temperatureMinCelsius.roundedInt) to \(temperatureMaxCelsius.roundedInt) °C"),
             ("Feels like", "\(apparentTemperatureMaxCelsius.roundedInt) °C"),
             ("Wind", "\(windSpeedMaxKilometresPerHour.roundedInt) km/h, gusting \(windGustsMaxKilometresPerHour.roundedInt)"),
             ("Precipitation", "\(precipitationSumMillimetres.reasonValue) mm (\(precipitationProbabilityMaxPercent.roundedInt)% chance)"),

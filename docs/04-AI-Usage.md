@@ -406,6 +406,71 @@ Confirmed live: searching **Farellones** returns the 173 m one in Aysén *first*
 with zero test failures — a simulator preflight flake that never launched the app. Exactly
 the case the exit-code rule exists for, and the second time this session it has fired.
 
+### 2026-09-05 — I predicted Excellent, the app said Fair, and the app was right ⚠️
+
+To find a city where skiing would actually score, I wrote a throwaway script approximating
+the scoring curves and predicted Valle Nevado would come back **Excellent**. I flagged it as
+a prediction rather than a measurement, and said a materially different result was worth
+investigating. The app returned **Fair**.
+
+Recomputing with the real rule logic showed the app was correct — best day Friday, 47/100.
+Two causes, both mine:
+
+1. **The forecast had moved.** My data was ~13 hours old: 13.2 cm of snow on the 10th had
+   become 4.4 cm, halving the snow gate from 0.88 to 0.50 and dragging the whole week down.
+2. **My script approximated the curves.** I modelled the existing-base credit as a step
+   function; the real rule ramps it linearly from −2 °C to +4 °C.
+
+The useful part is that the discrepancy was *checkable*. Because the thresholds are named
+constants and the composition is documented, reproducing the model outside the app took
+twenty lines. Had the weights been magic numbers inside a `switch`, "is the app wrong?"
+would have been unanswerable.
+
+### 2026-09-05 — Two bugs a screenshot found and 136 tests could not
+
+Looking at the breakdown screen for Valle Nevado:
+
+```
+Temperature          -8–-2 °C          ← three dashes in a row, unreadable
+Snowfall              4.4 cm
+...
+⚠️ Thin cover — no fresh snow          ← four rows below "4.4 cm"
+```
+
+The first is a range joined with an en dash, colliding with two minus signs — and at a ski
+resort both ends are negative for most of the season, so this is the normal case, not an
+edge case. Fixed by using "to" for every range rather than switching separator by sign: one
+format is harder to get wrong later than a conditional one.
+
+The second is worse — the app contradicting itself. `SkiingRule` only calls snowfall
+"notable" at ≥ 5 cm, so 4.4 cm fell through to a catch-all sentence written for days with
+genuinely zero snow. The *score* was right; a 0.50 snow gate is exactly what capped it at
+Fair. The sentence was false, sitting directly beneath the number that disproved it. Now
+"Only 4.4 cm fresh snow", with a 0.5 cm floor below which a trace is still reported as none.
+
+**Not one existing test broke.** They assert on `ScoreReason.factor` and `.sentiment`, never
+on copy — a Phase 1 decision made for exactly this reason, which paid for itself here. Two
+regression tests added.
+
+That is the third bug this project found by looking at the running app rather than by
+testing it, after the Phase 1 characterisation table and the Phase 4 best-day contradiction.
+All three shared a shape: every individual number correct, and the combination lying.
+
+### 2026-09-05 — Phase 5: writing down where the plan was wrong
+
+`docs/03` was specified in `01` as the place the plan and the outcome get compared. The
+temptation in writing it was to present the finished design as though it had been the
+intention — the scoring model as a considered gate-based architecture, rather than as a bug
+fix applied after a fully green test suite had shipped a 24 °C ski day at 40/100.
+
+Section 2 is written the other way round: *the plan was wrong here, here and here.* It also
+records the one place the shipped app deviates from a commitment in `01` — the day list
+shows each day's top activity rather than all four — because a document that records only
+the deviations flattering to its author is not a record.
+
+**Phase 5 result:** 138 tests passing, exit code 0. `docs/02`, `docs/03`, a rewritten README,
+and three screenshots captured from the running app.
+
 ---
 
-*Appended per phase. Next: Phase 5 — `docs/02`–`03`, README, screenshots.*
+*Log complete. Five phases, five commits, each on a green build.*
