@@ -41,11 +41,38 @@ struct ForecastScreen: View {
 
     private var loaded: some View {
         List {
+            // The row exists only when the two clocks disagree — that check is stable, so
+            // it gates the row, while `TimelineView` keeps the text itself from going
+            // quietly stale. A clock twenty minutes out is worse than no clock: it still
+            // looks precise.
+            if CityClock.isWorthShowing(
+                cityTimeZone: viewModel.city.localTimeZone,
+                deviceTimeZone: .current,
+                at: Date()
+            ) {
+                TimelineView(.everyMinute) { context in
+                    Text(
+                        CityClock.caption(
+                            now: context.date,
+                            cityName: viewModel.city.name,
+                            cityTimeZone: viewModel.city.localTimeZone,
+                            deviceTimeZone: .current
+                        ) ?? ""
+                    )
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .accessibilityLabel("All days below are \(viewModel.city.name)'s local days.")
+                }
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 4, trailing: 20))
+            }
+
             Section("Best day for") {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(viewModel.bestDays) { summary in
-                            BestDayCard(summary: summary)
+                            BestDayCard(summary: summary, cityTimeZone: viewModel.city.localTimeZone)
                         }
                     }
                     .padding(.vertical, 4)
@@ -56,7 +83,7 @@ struct ForecastScreen: View {
             Section("Next \(viewModel.days.count) days") {
                 ForEach(viewModel.days) { day in
                     NavigationLink(value: day) {
-                        DayRow(day: day)
+                        DayRow(day: day, cityTimeZone: viewModel.city.localTimeZone)
                     }
                 }
             }
@@ -84,6 +111,8 @@ struct ForecastScreen: View {
 private struct BestDayCard: View {
 
     let summary: BestDaySummary
+    /// "Today" is the *city's* today — see `DayLabel`.
+    let cityTimeZone: TimeZone
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -103,7 +132,7 @@ private struct BestDayCard: View {
 
     private var dayText: String {
         guard let day = summary.day else { return "—" }
-        return DayLabel.weekday(day.date)
+        return DayLabel.weekday(day.date, cityTimeZone: cityTimeZone)
     }
 
     /// Spelled out rather than read as "dash": a card with no day needs to say *why* it has
@@ -115,7 +144,7 @@ private struct BestDayCard: View {
                 ? "\(name): no data"
                 : "\(name): no suitable day in the next 7 days"
         }
-        return "Best day for \(name): \(DayLabel.weekday(day.date)), \(summary.rating.displayName)"
+        return "Best day for \(name): \(DayLabel.weekday(day.date, cityTimeZone: cityTimeZone)), \(summary.rating.displayName)"
     }
 }
 
@@ -123,11 +152,12 @@ private struct BestDayCard: View {
 private struct DayRow: View {
 
     let day: DayForecast
+    let cityTimeZone: TimeZone
 
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(DayLabel.weekday(day.date))
+                Text(DayLabel.weekday(day.date, cityTimeZone: cityTimeZone))
                     .font(.body.weight(.medium))
                 Text(DayLabel.shortDate(day.date))
                     .font(.caption)

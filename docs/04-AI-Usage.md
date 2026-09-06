@@ -501,4 +501,126 @@ evidence of judgement than having attempted it.
 
 ---
 
-*Log complete. Five phases, each on a green build.*
+### 2026-09-06 — A user question that overturned a signed-off assumption
+
+Walking through the codebase, the user asked what happens when the device and the city are
+on different dates: *"if the date in China is the 7th and in my time in India it is the 6th,
+then we are showing 7 days starting from tomorrow."* Correct — and then the follow-up that
+mattered: *"I will think that this condition is for tomorrow, but actually it is current in
+China."*
+
+`docs/01` §3 had already recorded "Today means the user's calendar day" as a considered
+decision, with its cost stated. But the cost it stated was only the mild half — a user
+*ahead* of the city sees a "Today" row that is the city's tomorrow, which the date beside it
+gives away. The half it never considered is the mirror: a user *behind* the city sees the
+city's **current** conditions headed **"Tomorrow"**. That is not an off-by-one label, it is a
+present-tense forecast sold as the future, and `ForecastScreen` shows nothing — no local date,
+no local time — that could contradict it.
+
+The justification was weakest exactly where it broke. "It matches the calendar the user is
+holding" is an argument for an app about your own life. DayCast is a forecast about somewhere
+else; the days being ranked are that city's days. Reversed to the city's calendar. `City`
+already carried `timezone` from geocoding, unused for this, so the change was three call sites.
+
+Two things worth recording about how it was found:
+
+- **It came from explaining the code, not from testing it.** This is the fourth defect in
+  this project found by looking rather than by the suite, and the pattern holds again: every
+  individual piece was correct — the parse anchor, the comparison, the label — and the
+  combination lied. The suite was green before the change and green after.
+- **A verified claim and a checked claim are still different things.** Earlier in the same
+  conversation I asserted that swapping `dateComponents` for interval subtraction would turn
+  `labelIsStableAcrossTheUsersDay` red. Running all three variants showed it does not: with
+  the re-anchoring in place both values are exact UTC midnights, so subtraction agrees. What
+  that test actually protects is the *anchoring*, and it fails only for New York — the
+  original `Calendar.current` bug was invisible on an IST machine. The test comment overstates
+  its own reach; the assertion is right, the reason given for it was not.
+
+`cityTimeZone` is now a required parameter with **no default**. A default of `.current` is
+precisely the hidden environment read this type exists to prevent, and it would compile
+silently — the same failure mode as the original bug, one convenience away.
+
+---
+
+### 2026-09-06 — A dead tap target, and the side effect that hid it
+
+Reported from use: in the *search results* list, tapping a city's name did nothing; only
+the empty space to the right of it selected the city. The recents list below was fine.
+
+The cause was one modifier on the search rows:
+
+```swift
+NavigationLink(value: city) { CityRow(city: city) }
+.simultaneousGesture(TapGesture().onEnded {
+    Task { await viewModel.select(city) }
+})
+```
+
+A tap gesture attached to a `NavigationLink` sits on the link's **content**. Taps on the
+label were consumed by the gesture and the link never activated; the empty right-hand area
+is the `List` cell rather than link content, so it still navigated. Recents used the
+identical `NavigationLink` and `CityRow` *without* the gesture, which is exactly why only
+one of the two lists was broken — the structural difference was the whole bug.
+
+**What made it findable was a leftover, not a repro.** Automated taps could not focus the
+search field, so the bug was never reproduced directly. But a screenshot of the recents list
+showed *"California, Missouri"* — a city that had been saved as recent without its forecast
+ever being opened. That is the bug's signature: `select(city)` ran, wrote to storage, and no
+navigation followed. A silent side effect leaves evidence even when the failure does not.
+
+The gesture existed only to record the recent search. Recording it on the row was the wrong
+place regardless of the hit-testing: a side effect racing a navigation. It moved to where the
+navigation lands:
+
+```swift
+.navigationDestination(for: City.self) { city in
+    ForecastScreen(viewModel: container.makeForecastViewModel(city: city))
+        .task { await viewModel.select(city) }
+}
+```
+
+"Recent" now means a city that was **viewed**, not one that was tapped at, and both lists go
+through one path. Confirmed working on device by the user.
+
+Two things worth recording about this one:
+
+- **I had already read that code and not questioned it.** It was on screen earlier in the
+  same session while tracing `DayLabel` call sites for an unrelated change. Reading code with
+  one question in mind reliably blinds you to everything that is not that question.
+- **Nothing automated was ever going to catch it.** A `simultaneousGesture` on a
+  `NavigationLink` is invisible to unit tests, and `docs/01` §5 rejects snapshot tests
+  deliberately. The suite was green through the entire life of the bug. This is now the fifth
+  defect in this project found by looking at the app and the fifth found by no test at all —
+  at some point that ratio *is* the finding.
+
+---
+
+### 2026-09-06 — Stating the frame instead of leaving it to be inferred
+
+Having moved day labels to the city's calendar, the user asked whether the screen should say
+so. It should: the change made every label correct *about the city*, but a device on the 6th
+still read "Today, 7 Sep" with only a date to hint at why. Correct and unexplained is a weaker
+place to stop than it looks.
+
+`CityClock` renders one caption under the city name — *"It's 6:08 AM on Monday, 7 September in
+Queenstown"* — and returns `nil` when there is nothing to reconcile, so the majority of
+lookups gain no clutter. Three details that were decisions rather than defaults:
+
+- **Compared by UTC offset, not identifier.** `Asia/Colombo` and `Asia/Kolkata` are different
+  zones showing the same time; captioning one for the other would be noise dressed as help.
+  Tested directly.
+- **`TimelineView(.everyMinute)`, not a value captured at render.** A clock twenty minutes
+  stale is worse than no clock, because it still looks precise.
+- **Visibility and text are separate calls.** Whether to show changes only at a DST boundary;
+  the text changes every minute. Gating the row on the stable one keeps a same-clock city
+  costing no row rather than an empty one.
+
+The first attempt put the row modifiers on the `Text` inside the `TimelineView`, so they never
+reached the row and the caption rendered inside its own white card — reading as content
+competing with "Best day for" rather than as an annotation to the title. Caught by looking at
+the screenshot, not by the four passing tests, which is the same lesson as everything else in
+this log: **the tests can only tell you the string is right.**
+
+---
+
+*Log complete. Five phases, each on a green build, plus three post-review corrections.*

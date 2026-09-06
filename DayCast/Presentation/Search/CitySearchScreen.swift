@@ -20,8 +20,15 @@ struct CitySearchScreen: View {
                     placement: .navigationBarDrawer(displayMode: .always),
                     prompt: "Search for a city"
                 )
+                // Recording the choice belongs here, not on the row. A tap gesture
+                // attached to a `NavigationLink` sits on the link's *content*, so it
+                // swallowed taps that landed on the label while the rest of the cell still
+                // navigated — the row appeared dead everywhere except the empty space to
+                // its right, and the city was silently saved to recents without opening.
+                // Recording on arrival also makes "recent" mean *viewed*, not *tapped*.
                 .navigationDestination(for: City.self) { city in
                     ForecastScreen(viewModel: container.makeForecastViewModel(city: city))
+                        .task { await viewModel.select(city) }
                 }
                 // Debounce and cancellation in one line: changing the query cancels the
                 // previous run, and `search()` sleeps before it does anything expensive.
@@ -46,9 +53,6 @@ struct CitySearchScreen: View {
                     NavigationLink(value: city) {
                         CityRow(city: city)
                     }
-                    .simultaneousGesture(TapGesture().onEnded {
-                        Task { await viewModel.select(city) }
-                    })
                 }
                 .listStyle(.plain)
             case .empty:

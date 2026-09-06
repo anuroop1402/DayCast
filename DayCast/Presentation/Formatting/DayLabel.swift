@@ -11,16 +11,24 @@ import Foundation
 /// rendered as Thursday. The date is a *calendar day label*, not a moment in time, so it
 /// must be read back in the same timezone it was written in.
 ///
-/// `today` **and the user's timezone** are both injected rather than read from `Date()` and
+/// `today` **and the city's timezone** are both injected rather than read from `Date()` and
 /// `Calendar.current`, for the same reason the scoring engine takes a reference date: a
 /// function that reads the environment cannot be tested, only observed. The first version
 /// read `Calendar.current` and its tests passed in IST and would have failed in New York.
+/// `cityTimeZone` deliberately has **no default** — a default of `.current` is exactly the
+/// hidden environment read this type exists to prevent, and it would compile silently.
 ///
-/// **"Today" means the user's calendar day, not the city's.** A user in Mumbai at 04:30
-/// looking at Oslo is in a few-hour window where the two disagree, and either choice is
-/// defensible. The phone's own day wins because it matches the calendar the user is
-/// actually holding; the cost is that for those few hours the day labelled "Today" is the
-/// city's tomorrow. Recorded as an assumption in `docs/01-Solution-Planning.md`.
+/// **"Today" means the city's calendar day, not the device's.** The forecast is about
+/// somewhere else, so the days being ranked are that city's days: "Tuesday" means
+/// Chamonix's Tuesday. Labelling by the device's calendar breaks in both directions during
+/// the hours the two disagree, and the worse direction is a device *behind* the city — an
+/// Indian user opening Shanghai at 22:00 IST would see China's current conditions headed
+/// **"Tomorrow"**, a present-tense forecast labelled as the future, with nothing on screen
+/// to contradict it. Recorded as an assumption in `docs/01-Solution-Planning.md`.
+///
+/// The cost is the mirror case, and it is milder: for those hours a device on the 6th sees
+/// a row reading "Today, 7 Sep". `shortDate` puts the calendar date beside every label
+/// precisely so that row explains itself.
 nonisolated enum DayLabel {
 
     private static var utcCalendar: Calendar {
@@ -40,9 +48,9 @@ nonisolated enum DayLabel {
     static func weekday(
         _ date: Date,
         today: Date = Date(),
-        userTimeZone: TimeZone = .current
+        cityTimeZone: TimeZone
     ) -> String {
-        switch offsetInDays(from: today, to: date, userTimeZone: userTimeZone) {
+        switch offsetInDays(from: today, to: date, cityTimeZone: cityTimeZone) {
         case 0:  "Today"
         case 1:  "Tomorrow"
         default: formatter("EEEE").string(from: date)
@@ -58,27 +66,27 @@ nonisolated enum DayLabel {
     static func full(
         _ date: Date,
         today: Date = Date(),
-        userTimeZone: TimeZone = .current
+        cityTimeZone: TimeZone
     ) -> String {
-        let day = weekday(date, today: today, userTimeZone: userTimeZone)
+        let day = weekday(date, today: today, cityTimeZone: cityTimeZone)
         return "\(day), \(formatter("d MMMM").string(from: date))"
     }
 
     /// Whole days between two dates, compared as calendar days rather than by subtracting
     /// intervals — 23 hours apart can still be two different days.
     ///
-    /// `today` arrives as a real moment. Its calendar day *in the user's timezone* is
+    /// `today` arrives as a real moment. Its calendar day *in the city's timezone* is
     /// re-anchored to UTC midnight before comparing, because that is the frame every
     /// forecast date is already in — comparing the two directly would mix frames and shift
-    /// every label by a day for anyone not on UTC.
+    /// every label by a day for any city not on UTC.
     private static func offsetInDays(
         from today: Date,
         to date: Date,
-        userTimeZone: TimeZone
+        cityTimeZone: TimeZone
     ) -> Int? {
-        var userCalendar = Calendar(identifier: .gregorian)
-        userCalendar.timeZone = userTimeZone
-        let day = userCalendar.dateComponents([.year, .month, .day], from: today)
+        var cityCalendar = Calendar(identifier: .gregorian)
+        cityCalendar.timeZone = cityTimeZone
+        let day = cityCalendar.dateComponents([.year, .month, .day], from: today)
 
         guard let anchoredToday = utcCalendar.date(from: day) else { return nil }
         return utcCalendar.dateComponents([.day], from: anchoredToday, to: date).day

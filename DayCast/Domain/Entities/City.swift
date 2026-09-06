@@ -18,3 +18,15 @@ nonisolated struct City: Identifiable, Hashable, Sendable, Codable {
     let longitude: Double
     let timezone: String
 }
+
+nonisolated extension City {
+
+    /// The city's own timezone, for deciding which of its days is "today".
+    ///
+    /// Falls back to UTC rather than `.current` so that an unrecognised identifier degrades
+    /// to the frame every forecast date is already anchored in, instead of silently
+    /// reintroducing the device's calendar — the exact coupling this type exists to avoid.
+    var localTimeZone: TimeZone {
+        TimeZone(identifier: timezone) ?? ForecastDate.displayTimeZone
+    }
+}

@@ -42,7 +42,7 @@ struct DayBreakdownScreen: View {
                 }
             }
         }
-        .navigationTitle(DayLabel.full(day.date))
+        .navigationTitle(DayLabel.full(day.date, cityTimeZone: city.localTimeZone))
         .navigationBarTitleDisplayMode(.inline)
     }
 }
