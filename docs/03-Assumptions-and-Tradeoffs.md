@@ -169,7 +169,7 @@ were checked against the running app or the real repository rather than assumed.
 
 | Criterion | Verified | How |
 |---|---|---|
-| Fresh clone builds and `xcodebuild test` passes with no manual setup | ✅ | Cloned from the remote into an empty directory and ran the README's exact command: exit code 0, 138 tests. No package resolution, no scheme selection, no keys. |
+| Fresh clone builds and `xcodebuild test` passes with no manual setup | ✅ | Cloned from the remote into an empty directory and ran the README's exact command: exit code 0, 144 tests (re-verified after the post-review fixes). No package resolution, no scheme selection, no keys. |
 | `Domain` has zero imports outside `Foundation` | ✅ | `ArchitectureBoundaryTests` reads the source files on every ⌘U. |
 | Every score in the UI is explainable by tapping into a breakdown | ✅ | Screenshot 3 — conditions the score can be audited against, plus the reason the domain generated. |
 | Inland city degrades surfing only, not the screen | ✅ | Queenstown and Valle Nevado, live. Marine returns `HTTP 200` with all-null values; surfing reads "No data" while skiing and both sightseeing scores stand. |

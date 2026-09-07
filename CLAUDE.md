@@ -12,7 +12,7 @@ Assessed on engineering judgment, not feature volume. All written reasoning live
 ## Current state — update this at the end of every phase
 
 **Phase 5 complete — all five phases done.** (`docs/02`, `docs/03`, README, 3 screenshots,
-138 tests green.)
+144 tests green.)
 
 Verified against the live API on the simulator: search → forecast → breakdown, for a coastal
 city, an inland one and a ski resort. Three bugs in this project were found by *looking at

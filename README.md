@@ -7,6 +7,11 @@ forecast data, with a plain-English reason for every score.
 SwiftUI · Swift 6 language mode · Clean Architecture · Swift Testing · **zero third-party
 dependencies**
 
+> **Reviewing this?** The brief ranks *how I worked* above the application. Start with
+> **[`docs/00-How-I-Worked.md`](docs/00-How-I-Worked.md)** — process, AI usage and
+> verification, the five bugs the test suite never caught, and what I'd fix next. Then
+> `git log`, where the commit messages carry the reasoning.
+
 ---
 
 ## Screenshots
@@ -36,7 +41,7 @@ xcodebuild test -project DayCast.xcodeproj -scheme DayCast \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
-**138 tests.** Try **Valle Nevado** for a good ski week, **Biarritz** for real surf, and
+**144 tests.** Try **Valle Nevado** for a good ski week, **Biarritz** for real surf, and
 **Prague** for an inland city where surfing correctly reports *no data* while everything
 else still scores.
 
@@ -91,10 +96,14 @@ followed: [`docs/02-Architecture-Decisions.md`](docs/02-Architecture-Decisions.m
 
 | | |
 |---|---|
+| [`00-How-I-Worked.md`](docs/00-How-I-Worked.md) | **Start here.** Process, AI usage and how output was verified, the five bugs found by looking rather than testing, what I'd do next, and what I'm not happy with. |
 | [`01-Solution-Planning.md`](docs/01-Solution-Planning.md) | Problem framing, the questions I'd have asked a PM and what I assumed instead, scope cuts with reasons. Written **before** implementation and deliberately not revised. |
 | [`02-Architecture-Decisions.md`](docs/02-Architecture-Decisions.md) | 15 decisions, each with what was rejected and what it **costs**. |
 | [`03-Assumptions-and-Tradeoffs.md`](docs/03-Assumptions-and-Tradeoffs.md) | What the model assumes, **where the plan turned out to be wrong**, known limitations, how each definition-of-done criterion was verified, and what I'd do next. |
 | [`04-AI-Usage.md`](docs/04-AI-Usage.md) | A dated log kept as the work happened — where AI output was wrong and how it was caught, where I overruled it and why. |
 | [`CLAUDE.md`](CLAUDE.md) | The rules I held myself to, including what was considered and rejected. |
 
-The commit history is meant to be read: one commit per phase, each on a green build.
+The commit history is meant to be read: one commit per phase, each on a green build, plus
+four commits *after* the work was "done" — a plausible-but-wrong doc section corrected against
+the live API, and two bugs found by using the app. Those four are the most honest evidence in
+the repo; see [`docs/00`](docs/00-How-I-Worked.md) §4–5.
