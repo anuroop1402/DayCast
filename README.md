@@ -7,10 +7,9 @@ forecast data, with a plain-English reason for every score.
 SwiftUI · Swift 6 language mode · Clean Architecture · Swift Testing · **zero third-party
 dependencies**
 
-> **Reviewing this?** The brief ranks *how I worked* above the application. Start with
-> **[`docs/00-How-I-Worked.md`](docs/00-How-I-Worked.md)** — process, AI usage and
-> verification, the five bugs the test suite never caught, and what I'd fix next. Then
-> `git log`, where the commit messages carry the reasoning.
+> **Start with [`docs/00-How-I-Worked.md`](docs/00-How-I-Worked.md)** — how the work was
+> sequenced, how AI output was verified, the five bugs the test suite never caught, and what
+> I would fix next. Then `git log`, where the commit messages carry the reasoning.
 
 ---
 
@@ -103,7 +102,8 @@ followed: [`docs/02-Architecture-Decisions.md`](docs/02-Architecture-Decisions.m
 | [`04-AI-Usage.md`](docs/04-AI-Usage.md) | A dated log kept as the work happened — where AI output was wrong and how it was caught, where I overruled it and why. |
 | [`CLAUDE.md`](CLAUDE.md) | The rules I held myself to, including what was considered and rejected. |
 
-The commit history is meant to be read: one commit per phase, each on a green build, plus
-four commits *after* the work was "done" — a plausible-but-wrong doc section corrected against
-the live API, and two bugs found by using the app. Those four are the most honest evidence in
-the repo; see [`docs/00`](docs/00-How-I-Worked.md) §4–5.
+The commit history is meant to be read: one feature commit per phase, each on a green build,
+plus the work that came *after* the app was nominally done — a plausible-but-wrong doc section
+corrected against the live API, and two bugs found by using the app rather than testing it.
+Those later commits are the most honest evidence in the repo; see
+[`docs/00`](docs/00-How-I-Worked.md) §4–5.

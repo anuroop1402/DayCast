@@ -1,16 +1,17 @@
 # How I Worked
 
-The brief ranks *how you worked* above the application, and asks for reasoning rather than
-polished documentation. This file is the entry point for that. It is deliberately the least
-polished document here, because it describes the process rather than the result.
+This is the entry point for the process behind the app: how the work was sequenced, how AI
+output was verified, and where my own reasoning turned out to be wrong. The other documents
+describe the result; this one describes getting there.
 
 **If you have ten minutes, read in this order:**
 
 1. This file.
 2. [`04-AI-Usage.md`](04-AI-Usage.md) — the running log. Where AI was wrong, how it was
    caught, where I overruled it. Written as the work happened, not assembled at the end.
-3. `git log` — one commit per phase, each on a green build. The messages carry the reasoning;
-   several are longer than the diff.
+3. `git log` — one feature commit per phase, each on a green build, plus the `docs:` and
+   `fix:` commits between them. The messages carry the reasoning; several are longer than
+   the diff.
 4. [`03-Assumptions-and-Tradeoffs.md`](03-Assumptions-and-Tradeoffs.md) §2 — where the plan
    turned out to be wrong.
 
@@ -33,7 +34,8 @@ Domain first, on purpose. The scoring engine is the only part of this problem th
 already solved by the platform, so it got built first, in isolation, with no network and no
 UI to hide behind.
 
-There are also four commits **after** phase 5. Those are the interesting ones — see §4.
+Work continued after phase 5, once the app had been read and used rather than only tested.
+Those commits are the interesting ones — see §5.
 
 ## 2. Planning, and what I did with it
 
@@ -105,17 +107,24 @@ Every one of these was found by looking at the running app. None was found by a 
 **They share a shape.** In every case each individual value was correct and the *combination*
 was wrong. A unit test asserts a value. None of these is a value.
 
-That is not an argument for more tests. It is the reason `docs/01` §5 rejects snapshot tests
+That is not an argument for more tests. It is the reason `docs/01` §4 rejects snapshot tests
 (brittle, and they would have caught #2 only by accident) and the reason the honest next step
 is one UI test per screen on the primary tap path — which would have caught #5 directly.
 
 The habit that actually worked was cheaper: **look at the app against real data before calling
 anything done.** It is written into `CLAUDE.md` for that reason.
 
-## 5. The four commits after "done"
+## 5. What happened after phase 5
 
-The submission was finished at phase 5. Then it got read out loud, and four commits followed.
-I have left them in rather than squashing, because they are the best evidence of how I work.
+Phase 5 was the planned end. Everything after it came from reading the documents back and
+using the app, and I have left those commits in rather than squashing, because they are the
+best evidence of how I work.
+
+**`c346bbf` — verified all six definition-of-done criteria.** `docs/01` committed to six and
+left them as an unticked checklist. Four were already covered. The two that were not needed
+doing rather than asserting: a fresh clone from the remote building and passing on the
+README's exact command, and the offline state recovering on retry with the network restored.
+A checklist nobody ticks is not evidence.
 
 **`99d2cdd` — the elevation section, corrected with measured behaviour.** §3 above. The
 version I nearly submitted was plausible and wrong.
@@ -154,6 +163,11 @@ of hit-testing. It moved to the navigation destination, so "recent" now means a 
 
 A detail I liked: the old code left evidence. The recents list contained a city whose forecast
 had never been opened. The save ran; the navigation didn't.
+
+**`ff7349f` — this document, and four stale test counts.** The repo led with polished
+architecture docs and left the process to be reconstructed from `git log`. Also corrected the
+test count in four files, which still said 138 after the fixes above, and re-ran the fresh
+clone check so the claim in `docs/03` §4 is accurate as written rather than inherited.
 
 ## 6. What I would do next, in order
 

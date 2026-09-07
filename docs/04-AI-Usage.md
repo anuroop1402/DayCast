@@ -588,7 +588,7 @@ Two things worth recording about this one:
   same session while tracing `DayLabel` call sites for an unrelated change. Reading code with
   one question in mind reliably blinds you to everything that is not that question.
 - **Nothing automated was ever going to catch it.** A `simultaneousGesture` on a
-  `NavigationLink` is invisible to unit tests, and `docs/01` §5 rejects snapshot tests
+  `NavigationLink` is invisible to unit tests, and `docs/01` §4 rejects snapshot tests
   deliberately. The suite was green through the entire life of the bug. This is now the fifth
   defect in this project found by looking at the app and the fifth found by no test at all —
   at some point that ratio *is* the finding.

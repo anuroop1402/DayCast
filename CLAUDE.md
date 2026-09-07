@@ -11,7 +11,7 @@ Assessed on engineering judgment, not feature volume. All written reasoning live
 
 ## Current state — update this at the end of every phase
 
-**Phase 5 complete — all five phases done.** (`docs/02`, `docs/03`, README, 3 screenshots,
+**Phase 5 complete — all five phases done.** (`docs/02`, `docs/03`, README, 4 screenshots,
 144 tests green.)
 
 Verified against the live API on the simulator: search → forecast → breakdown, for a coastal

@@ -235,9 +235,10 @@ Roughly in order of value per hour, if this continued past the exercise.
    test not yet written.
 3. **Tune the model against real days.** Every threshold is reasoned rather than measured.
    Even a few dozen hand-labelled days would turn opinions into evidence.
-4. **UI tests for the three screens.** Snapshot tests were rejected and I stand by that, but
-   the best-day contradiction (`AD-14`) showed the cost. A small number of flow-level UI tests
-   would catch what unit tests structurally cannot.
+4. **UI tests for the three screens.** Snapshot tests were rejected (`AD-14`) and I stand by
+   that, but the best-day contradiction showed the cost, and so did the dead tap target in the
+   search list. A small number of flow-level UI tests would catch what unit tests structurally
+   cannot.
 5. **Localisation.** All copy is English and hard-coded. The structure is ready — display
    strings are already isolated in `Presentation/Formatting`.
 
