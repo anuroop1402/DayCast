@@ -110,9 +110,13 @@ Hand-written JSON agrees with the DTO by construction and tests nothing.
   inland city still gets valid ski and sightseeing scores. Degradation is **per-day** —
   it falls out of the dictionary lookup in the merge, so don't reintroduce a city-wide flag.
 - **Cancellation is the one marine error that is not swallowed.** `GetActivityForecast`
-  rethrows `AppError.cancelled` and `CancellationError`. `.task(id:)` cancels on every
-  keystroke, and swallowing that would render a coastal city as "no coastal data" from a
-  superseded request.
+  rethrows `AppError.cancelled` and `CancellationError`. Two things cancel it: navigating
+  back while the forecast loads, and a land-forecast failure, which cancels the `async let`
+  sibling on scope exit. Swallowing either would return an empty dictionary — which is
+  indistinguishable from a legitimate inland answer — and render a coastal city as "no
+  coastal data" from a request nobody is waiting on. (The keystroke-driven `.task(id:)` is
+  on the *search* screen and drives `SearchCities`; the forecast screen uses a plain
+  `.task`.)
 - **Indoor sightseeing is not "always good."** It scores high when outdoor conditions are
   poor, then drops again when weather is travel-hostile (storm, heavy snow, gale).
 - Ski and surf scores are **weather-only** — they do not know whether a mountain or beach

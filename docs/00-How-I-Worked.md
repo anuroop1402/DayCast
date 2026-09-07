@@ -35,7 +35,7 @@ already solved by the platform, so it got built first, in isolation, with no net
 UI to hide behind.
 
 Work continued after phase 5, once the app had been read and used rather than only tested.
-Those commits are the interesting ones — see §5.
+See §5.
 
 ## 2. Planning, and what I did with it
 
@@ -73,8 +73,7 @@ returns `HTTP 200` with every marine value `null` rather than an error, and that
 search with no matches omits the `results` key entirely instead of returning `[]`.
 
 **Opening the app and looking at it.** Five real defects in this project were found this way.
-Zero were found by the test suite. Details in §4, because that ratio is the most useful thing
-I learned here.
+Zero were found by the test suite. Details in §4.
 
 **Where AI output was wrong, and how it was caught** — the fullest example, from
 [`04-AI-Usage.md`](04-AI-Usage.md):
@@ -117,8 +116,8 @@ anything done.** It is written into `CLAUDE.md` for that reason.
 ## 5. What happened after phase 5
 
 Phase 5 was the planned end. Everything after it came from reading the documents back and
-using the app, and I have left those commits in rather than squashing, because they are the
-best evidence of how I work.
+using the app. Left unsquashed, because a correction is only visible if the thing it corrected
+is still in the history.
 
 **`c346bbf` — verified all six definition-of-done criteria.** `docs/01` committed to six and
 left them as an unticked checklist. Four were already covered. The two that were not needed

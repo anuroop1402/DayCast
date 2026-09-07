@@ -105,5 +105,4 @@ followed: [`docs/02-Architecture-Decisions.md`](docs/02-Architecture-Decisions.m
 The commit history is meant to be read: one feature commit per phase, each on a green build,
 plus the work that came *after* the app was nominally done — a plausible-but-wrong doc section
 corrected against the live API, and two bugs found by using the app rather than testing it.
-Those later commits are the most honest evidence in the repo; see
-[`docs/00`](docs/00-How-I-Worked.md) §4–5.
+Those later commits are described in [`docs/00`](docs/00-How-I-Worked.md) §4–5.
